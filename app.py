@@ -107,37 +107,37 @@ def animated_number(value, label, card_id):
     """, unsafe_allow_html=True)
 
 # ===== FIX 1: CACHING FOR PERFORMANCE =====
+# ===== FIX 1: CACHING FOR PERFORMANCE (with error handling) =====
 @st.cache_resource
 def load_model():
-    model = joblib.load('claimguard_model.pkl')
-    model_columns = joblib.load('model_columns.pkl')
-    return model, model_columns
+    try:
+        model = joblib.load('claimguard_model.pkl')
+        model_columns = joblib.load('model_columns.pkl')
+        return model, model_columns
+    except FileNotFoundError:
+        st.error("⚠️ Model files not found. Please contact the system administrator.")
+        st.stop()
 
 @st.cache_data
 def load_and_score_data():
-    df = pd.read_csv('data/fraud_oracle.csv')
+    try:
+        df = pd.read_csv('data/fraud_oracle.csv')
+    except FileNotFoundError:
+        st.error("⚠️ Claims data file not found. Please contact the system administrator.")
+        st.stop()
+
     model, model_columns = load_model()
-    X = df.drop(columns=['PolicyNumber', 'RepNumber', 'FraudFound_P'])
-    X_encoded = pd.get_dummies(X, drop_first=True)
-    X_encoded = X_encoded.reindex(columns=model_columns, fill_value=0)
-    df['Risk_Score'] = model.predict_proba(X_encoded)[:, 1]
-    df['Risk_Level'] = pd.cut(df['Risk_Score'], bins=[0, 0.3, 0.6, 1.0], labels=['Low', 'Medium', 'High'])
+    try:
+        X = df.drop(columns=['PolicyNumber', 'RepNumber', 'FraudFound_P'])
+        X_encoded = pd.get_dummies(X, drop_first=True)
+        X_encoded = X_encoded.reindex(columns=model_columns, fill_value=0)
+        df['Risk_Score'] = model.predict_proba(X_encoded)[:, 1]
+        df['Risk_Level'] = pd.cut(df['Risk_Score'], bins=[0, 0.3, 0.6, 1.0], labels=['Low', 'Medium', 'High'])
+    except Exception as e:
+        st.error(f"⚠️ Error processing claims data: {str(e)}")
+        st.stop()
+
     return df
-
-model, model_columns = load_model()
-df = load_and_score_data()
-
-with st.sidebar:
-    st.markdown("## 🛡️ ClaimGuard")
-    st.caption("Insurance Fraud Prioritization")
-    st.divider()
-    st.markdown("### 🎛️ Filters")
-    month_filter = st.multiselect("Filter by Month", options=sorted(df['Month'].unique()), default=[])
-    st.divider()
-    st.markdown("### 🔔 Live Alerts")
-    top_alert = df.sort_values('Risk_Score', ascending=False).iloc[0]
-    st.markdown(f"""<div style="background:#1B2140; padding:10px 12px; border-radius:10px; border-left:3px solid #B0470E; font-size:12.5px;">
-    🚨 Highest risk claim: <b>{top_alert['Make']}</b><br>Score: <b>{top_alert['Risk_Score']:.2f}</b></div>""", unsafe_allow_html=True)
 
     # ===== FIX 2: MODEL TRANSPARENCY PANEL =====
     st.divider()
