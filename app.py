@@ -88,25 +88,15 @@ button[data-baseweb="tab"]:hover { background: rgba(201,162,75,0.1); }
 """, unsafe_allow_html=True)
 
 def animated_number(value, label, card_id):
+    if isinstance(value, float):
+        display_value = f"{value:.2f}"
+    else:
+        display_value = f"{value:,}"
     st.markdown(f"""
     <div class="stat-card">
         <div class="stat-label">{label}</div>
-        <div class="stat-value" id="{card_id}">0</div>
+        <div class="stat-value">{display_value}</div>
     </div>
-    <script>
-    (function() {{
-        let target = {value};
-        let el = window.parent.document.getElementById("{card_id}");
-        let count = 0;
-        let steps = 40;
-        let increment = target / steps;
-        let counter = setInterval(function() {{
-            count += increment;
-            if (count >= target) {{ count = target; clearInterval(counter); }}
-            if (el) {{ el.innerText = Math.round(count).toLocaleString(); }}
-        }}, 20);
-    }})();
-    </script>
     """, unsafe_allow_html=True)
 
 # ===== CACHING + ERROR HANDLING + ABSOLUTE PATHS =====
@@ -250,6 +240,36 @@ with tab2:
             <p style="margin-top:12px; color:#C9A24B; font-style:italic;">🤖 {explanation}</p>
         </div>
         """, unsafe_allow_html=True)
+
+        # ===== NEW: COMPARISON VS AVERAGE =====
+        avg_score = df['Risk_Score'].mean()
+        diff_pct = ((claim['Risk_Score'] - avg_score) / avg_score) * 100
+        comparison_text = f"{abs(diff_pct):.0f}% {'higher' if diff_pct > 0 else 'lower'} than the average claim"
+        comparison_color = "#B0470E" if diff_pct > 0 else "#2E6B3E"
+
+        st.markdown(f"""
+        <div style="background:#1B2140; padding:10px 16px; border-radius:10px; margin-top:8px; border-left:3px solid {comparison_color};">
+        📊 This claim's risk is <b style="color:{comparison_color};">{comparison_text}</b> (average: {avg_score:.2f})
+        </div>
+        """, unsafe_allow_html=True)
+
+        # ===== NEW: DOWNLOADABLE INVESTIGATION SUMMARY =====
+        report_text = f"""CLAIMGUARD INVESTIGATION SUMMARY
+{'='*40}
+Claim Row: {search_id}
+Risk Level: {claim['Risk_Level']} ({claim['Risk_Score']:.2f})
+Make: {claim['Make']} | Month: {claim['Month']}
+Fault: {claim['Fault']}
+Police Report Filed: {claim['PoliceReportFiled']}
+Witness Present: {claim['WitnessPresent']}
+
+Reason Flagged:
+{explanation}
+
+Generated: {datetime.now().strftime('%d %b %Y, %I:%M %p')}
+"""
+        st.download_button("📄 Download Investigation Summary", data=report_text,
+            file_name=f"claim_{search_id}_report.txt", mime="text/plain")
 
         st.write("")
         st.markdown("**Was this prediction accurate?**")
