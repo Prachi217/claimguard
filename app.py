@@ -170,6 +170,22 @@ st.write("")
 tab1, tab2, tab3 = st.tabs(["📊  Overview", "🔍  Search a Claim", "📋  All Claims"])
 
 with tab1:
+    with st.expander("ℹ️ New here? Click to see how this dashboard works"):
+        st.markdown("""
+        **What is ClaimGuard?**
+        This dashboard scores every insurance claim for fraud risk the moment it's filed — so an investigator always knows which claims to check first.
+
+        **How to use it:**
+        - 📊 **Overview** — see overall stats, today's top priority claim, and risk patterns
+        - 🔍 **Search a Claim** — enter any claim number to see its risk score and why it was flagged
+        - 📋 **All Claims** — browse and filter the full sorted list, or download it as a CSV
+
+        **What the colors mean:**
+        🔴 High Risk &nbsp;&nbsp; 🟠 Medium Risk &nbsp;&nbsp; 🟢 Low Risk
+
+        This is a student capstone project built on a public dataset — not a real insurance company's live system.
+        """)
+
     col1, col2, col3 = st.columns(3)
     with col1:
         animated_number(len(filtered_df), "Total Claims", "kpi1")
@@ -241,7 +257,6 @@ with tab2:
         </div>
         """, unsafe_allow_html=True)
 
-        # ===== NEW: COMPARISON VS AVERAGE =====
         avg_score = df['Risk_Score'].mean()
         diff_pct = ((claim['Risk_Score'] - avg_score) / avg_score) * 100
         comparison_text = f"{abs(diff_pct):.0f}% {'higher' if diff_pct > 0 else 'lower'} than the average claim"
@@ -253,7 +268,6 @@ with tab2:
         </div>
         """, unsafe_allow_html=True)
 
-        # ===== NEW: DOWNLOADABLE INVESTIGATION SUMMARY =====
         report_text = f"""CLAIMGUARD INVESTIGATION SUMMARY
 {'='*40}
 Claim Row: {search_id}
