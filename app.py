@@ -3,9 +3,12 @@ import pandas as pd
 import joblib
 import plotly.graph_objects as go
 import time
+import os
 from datetime import datetime
 
 st.set_page_config(page_title="ClaimGuard", page_icon="🛡️", layout="wide")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def generate_explanation(claim):
     possible_reasons = []
@@ -106,13 +109,12 @@ def animated_number(value, label, card_id):
     </script>
     """, unsafe_allow_html=True)
 
-# ===== FIX 1: CACHING FOR PERFORMANCE =====
-# ===== FIX 1: CACHING FOR PERFORMANCE (with error handling) =====
+# ===== CACHING + ERROR HANDLING + ABSOLUTE PATHS =====
 @st.cache_resource
 def load_model():
     try:
-        model = joblib.load('claimguard_model.pkl')
-        model_columns = joblib.load('model_columns.pkl')
+        model = joblib.load(os.path.join(BASE_DIR, 'claimguard_model.pkl'))
+        model_columns = joblib.load(os.path.join(BASE_DIR, 'model_columns.pkl'))
         return model, model_columns
     except FileNotFoundError:
         st.error("⚠️ Model files not found. Please contact the system administrator.")
@@ -121,25 +123,34 @@ def load_model():
 @st.cache_data
 def load_and_score_data():
     try:
-        df = pd.read_csv('data/fraud_oracle.csv')
+        df = pd.read_csv(os.path.join(BASE_DIR, 'data', 'fraud_oracle.csv'))
     except FileNotFoundError:
         st.error("⚠️ Claims data file not found. Please contact the system administrator.")
         st.stop()
 
     model, model_columns = load_model()
-    try:
-        X = df.drop(columns=['PolicyNumber', 'RepNumber', 'FraudFound_P'])
-        X_encoded = pd.get_dummies(X, drop_first=True)
-        X_encoded = X_encoded.reindex(columns=model_columns, fill_value=0)
-        df['Risk_Score'] = model.predict_proba(X_encoded)[:, 1]
-        df['Risk_Level'] = pd.cut(df['Risk_Score'], bins=[0, 0.3, 0.6, 1.0], labels=['Low', 'Medium', 'High'])
-    except Exception as e:
-        st.error(f"⚠️ Error processing claims data: {str(e)}")
-        st.stop()
-
+    X = df.drop(columns=['PolicyNumber', 'RepNumber', 'FraudFound_P'])
+    X_encoded = pd.get_dummies(X, drop_first=True)
+    X_encoded = X_encoded.reindex(columns=model_columns, fill_value=0)
+    df['Risk_Score'] = model.predict_proba(X_encoded)[:, 1]
+    df['Risk_Level'] = pd.cut(df['Risk_Score'], bins=[0, 0.3, 0.6, 1.0], labels=['Low', 'Medium', 'High'])
     return df
 
-    # ===== FIX 2: MODEL TRANSPARENCY PANEL =====
+model, model_columns = load_model()
+df = load_and_score_data()
+
+with st.sidebar:
+    st.markdown("## 🛡️ ClaimGuard")
+    st.caption("Insurance Fraud Prioritization")
+    st.divider()
+    st.markdown("### 🎛️ Filters")
+    month_filter = st.multiselect("Filter by Month", options=sorted(df['Month'].unique()), default=[])
+    st.divider()
+    st.markdown("### 🔔 Live Alerts")
+    top_alert = df.sort_values('Risk_Score', ascending=False).iloc[0]
+    st.markdown(f"""<div style="background:#1B2140; padding:10px 12px; border-radius:10px; border-left:3px solid #B0470E; font-size:12.5px;">
+    🚨 Highest risk claim: <b>{top_alert['Make']}</b><br>Score: <b>{top_alert['Risk_Score']:.2f}</b></div>""", unsafe_allow_html=True)
+
     st.divider()
     st.markdown("### 📊 Model Performance")
     st.markdown("""
@@ -240,7 +251,6 @@ with tab2:
         </div>
         """, unsafe_allow_html=True)
 
-        # ===== FIX 3: FEEDBACK LOOP =====
         st.write("")
         st.markdown("**Was this prediction accurate?**")
         fb_col1, fb_col2 = st.columns(2)
