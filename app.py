@@ -4,11 +4,47 @@ import joblib
 import plotly.graph_objects as go
 import time
 import os
+import streamlit_authenticator as stauth
 from datetime import datetime
 
 st.set_page_config(page_title="ClaimGuard", page_icon="🛡️", layout="wide")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# ===== LOGIN SYSTEM (streamlit-authenticator 0.4.2 syntax) =====
+credentials = {
+    "usernames": {
+        "investigator1": {
+            "email": "investigator1@claimguard.com",
+            "name": "Priya Sharma",
+            "password": "$2b$12$gnUizCrYMN5GkyKjm.iLjOJXCSPSC/hj.BrUQ7ucv0MiJCz2OxIji"
+        },
+        "admin": {
+            "email": "admin@claimguard.com",
+            "name": "Admin User",
+            "password": "$2b$12$K/gTNr0ryzI/Q8au6grGJezzIejtPCI4uJA/IshoqAuU03MX1qX5i"
+        }
+    }
+}
+
+authenticator = stauth.Authenticate(
+    credentials,
+    "claimguard_cookie",
+    "auth_key_123",
+    cookie_expiry_days=1
+)
+
+authenticator.login()
+
+if st.session_state.get('authentication_status') is False:
+    st.error("Username or password is incorrect")
+    st.stop()
+elif st.session_state.get('authentication_status') is None:
+    st.warning("Please enter your username and password")
+    st.stop()
+
+name = st.session_state.get('name')
+username = st.session_state.get('username')
 
 def generate_explanation(claim):
     possible_reasons = []
@@ -99,7 +135,6 @@ def animated_number(value, label, card_id):
     </div>
     """, unsafe_allow_html=True)
 
-# ===== CACHING + ERROR HANDLING + ABSOLUTE PATHS =====
 @st.cache_resource
 def load_model():
     try:
@@ -129,7 +164,13 @@ def load_and_score_data():
 model, model_columns = load_model()
 df = load_and_score_data()
 
+if 'search_history' not in st.session_state:
+    st.session_state.search_history = []
+
 with st.sidebar:
+    st.write(f"👤 Logged in as: **{name}**")
+    authenticator.logout("Logout", "sidebar")
+    st.divider()
     st.markdown("## 🛡️ ClaimGuard")
     st.caption("Insurance Fraud Prioritization")
     st.divider()
@@ -141,15 +182,22 @@ with st.sidebar:
     st.markdown(f"""<div style="background:#1B2140; padding:10px 12px; border-radius:10px; border-left:3px solid #B0470E; font-size:12.5px;">
     🚨 Highest risk claim: <b>{top_alert['Make']}</b><br>Score: <b>{top_alert['Risk_Score']:.2f}</b></div>""", unsafe_allow_html=True)
 
-    st.divider()
-    st.markdown("### 📊 Model Performance")
-    st.markdown("""
-    <div class="model-info-box">
-    <b style="color:#C9A24B;">Recall (catches real fraud):</b> 90%<br>
-    <b style="color:#C9A24B;">Precision (accuracy of alerts):</b> 13%<br>
-    <span style="color:#8792AD;">This model prioritizes catching fraud over avoiding false alarms. Roughly 1 in 8 flagged claims is genuinely fraudulent — the rest need human review to confirm.</span>
-    </div>
-    """, unsafe_allow_html=True)
+    if username == "admin":
+        st.divider()
+        st.markdown("### 📊 Model Performance")
+        st.markdown("""
+        <div class="model-info-box">
+        <b style="color:#C9A24B;">Recall (catches real fraud):</b> 90%<br>
+        <b style="color:#C9A24B;">Precision (accuracy of alerts):</b> 13%<br>
+        <span style="color:#8792AD;">This model prioritizes catching fraud over avoiding false alarms. Roughly 1 in 8 flagged claims is genuinely fraudulent — the rest need human review to confirm.</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    if st.session_state.search_history:
+        st.divider()
+        st.markdown("### 🕓 Recent Searches")
+        for h in st.session_state.search_history[-5:][::-1]:
+            st.caption(f"Claim #{h}")
 
     st.divider()
     st.markdown("### ℹ️ About")
@@ -233,6 +281,10 @@ with tab2:
     if st.button("View Claim Details", type="primary"):
         with st.spinner("Analyzing claim..."):
             time.sleep(0.4)
+
+        if search_id not in st.session_state.search_history:
+            st.session_state.search_history.append(search_id)
+
         claim = df.iloc[search_id]
         badge_class = f"risk-{claim['Risk_Level'].lower()}"
         explanation = generate_explanation(claim)
@@ -270,6 +322,7 @@ with tab2:
 
         report_text = f"""CLAIMGUARD INVESTIGATION SUMMARY
 {'='*40}
+Investigated by: {name}
 Claim Row: {search_id}
 Risk Level: {claim['Risk_Level']} ({claim['Risk_Score']:.2f})
 Make: {claim['Make']} | Month: {claim['Month']}
