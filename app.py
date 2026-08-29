@@ -88,6 +88,10 @@ section[data-testid="stSidebar"] { background: linear-gradient(180deg, #050B08, 
 .focus-item { background: rgba(92,214,138,0.06); border-left: 3px solid #5CD68A; padding: 8px 10px; border-radius: 6px;
     margin-bottom: 6px; font-size: 11.5px; color: #DCE9E0; }
 
+.command-header { display:flex; align-items:center; gap:10px; margin-bottom: 4px; }
+.command-badge { background: rgba(92,214,138,0.12); color:#5CD68A; border:1px solid rgba(92,214,138,0.3);
+    padding: 3px 12px; border-radius: 14px; font-size: 10.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+
 div[data-baseweb="tab-list"] { gap: 6px; }
 button[data-baseweb="tab"] { transition: all 0.25s ease; border-radius: 10px 10px 0 0 !important; }
 button[data-baseweb="tab"]:hover { background: rgba(92,214,138,0.1); }
@@ -334,7 +338,12 @@ filtered_df = df.copy()
 if month_filter:
     filtered_df = filtered_df[filtered_df['Month'].isin(month_filter)]
 
-st.markdown("### 🛡️ ClaimGuard — Claims Investigation Dashboard")
+st.markdown("""
+<div class="command-header">
+    <span class="command-badge">Investigator Command Center</span>
+</div>
+""", unsafe_allow_html=True)
+st.markdown("### 🛡️ ClaimGuard — Prioritized Fraud Queue")
 st.caption("Insurance Claims Fraud Prioritization System")
 
 high_pct = (filtered_df['Risk_Level'] == 'High').mean() * 100
@@ -415,6 +424,33 @@ with tab1:
             yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.06)', tickfont=dict(size=10))
         )
         st.plotly_chart(fig_trend, use_container_width=True)
+
+    st.write("")
+    st.markdown("#### 🔬 Why Claims Get Flagged — Risk Factor Breakdown")
+    st.caption("Real fraud rate for each risk signal, calculated from the dataset (from Week 3 EDA).")
+
+    factor_data = {
+        "Fault: Policy Holder": df[df['Fault'] == 'Policy Holder']['FraudFound_P'].mean() * 100 if 'FraudFound_P' in df.columns else 7.9,
+        "No Police Report": df[df['PoliceReportFiled'] == 'No']['FraudFound_P'].mean() * 100 if 'FraudFound_P' in df.columns else 6.0,
+        "No Witness": df[df['WitnessPresent'] == 'No']['FraudFound_P'].mean() * 100 if 'FraudFound_P' in df.columns else 6.0,
+        "First-Time Claimant": df[df['PastNumberOfClaims'] == 'none']['FraudFound_P'].mean() * 100 if 'FraudFound_P' in df.columns else 7.8,
+        "Utility Vehicle": df[df['VehicleCategory'] == 'Utility']['FraudFound_P'].mean() * 100 if 'FraudFound_P' in df.columns else 11.3,
+    }
+    factor_df = pd.DataFrame(list(factor_data.items()), columns=['Factor', 'Fraud Rate %']).sort_values('Fraud Rate %', ascending=True)
+
+    fig_factors = go.Figure(go.Bar(
+        x=factor_df['Fraud Rate %'], y=factor_df['Factor'], orientation='h',
+        marker=dict(color=factor_df['Fraud Rate %'], colorscale=[[0, '#2E6B3E'], [1, '#B0470E']]),
+        text=[f"{v:.1f}%" for v in factor_df['Fraud Rate %']], textposition='outside',
+        textfont=dict(color='white', size=11)
+    ))
+    fig_factors.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(255,255,255,0.02)', font=dict(color='white'),
+        height=280, margin=dict(t=10, b=10, l=10, r=40),
+        xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.06)', title="Fraud Rate %"),
+        yaxis=dict(showgrid=False)
+    )
+    st.plotly_chart(fig_factors, use_container_width=True)
 
 with tab2:
     st.subheader("🔍 Search a Claim")
