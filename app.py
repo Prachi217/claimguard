@@ -171,9 +171,9 @@ if st.session_state.get('authentication_status') is not True:
         <div class="hero-desc">Every claim is scored for fraud risk the moment it's filed — no more first-come, first-checked queues.
         Investigators get a ranked list, a plain-language reason for every flag, and a downloadable summary — all in one place.</div>
         <div class="hero-pill-row">
-            <div class="hero-pill">🔒 Login Protected</div>
-            <div class="hero-pill">📊 Model Transparency Built-In</div>
-            <div class="hero-pill">🧾 Audit-Ready Reports</div>
+            <div class="hero-pill"> Login Protected</div>
+            <div class="hero-pill"> Model Transparency Built-In</div>
+            <div class="hero-pill"> Audit-Ready Reports</div>
         </div>
         <div class="hero-stats-row">
             <div><div class="hero-stat-num">90%</div><div class="hero-stat-label">Fraud Recall</div></div>
@@ -182,15 +182,15 @@ if st.session_state.get('authentication_status') is not True:
         </div>
         <div class="hero-feature-grid">
             <div class="hero-feature-card">
-                <div class="hero-feature-title">🎯 Risk Scoring</div>
+                <div class="hero-feature-title"> Risk Scoring</div>
                 <div class="hero-feature-desc">Every claim ranked the moment it's filed, no manual triage needed.</div>
             </div>
             <div class="hero-feature-card">
-                <div class="hero-feature-title">🤖 AI Explanations</div>
+                <div class="hero-feature-title"> AI Explanations</div>
                 <div class="hero-feature-desc">Plain-language reasons behind every risk flag, built from real patterns.</div>
             </div>
             <div class="hero-feature-card">
-                <div class="hero-feature-title">📥 One-Click Reports</div>
+                <div class="hero-feature-title"> One-Click Reports</div>
                 <div class="hero-feature-desc">Download a case summary or the full queue as CSV for records.</div>
             </div>
         </div>
@@ -208,12 +208,12 @@ if st.session_state.get('authentication_status') is not True:
 authenticator.login()
 
 if st.session_state.get('authentication_status') is False:
-    st.error("❌ Username or password is incorrect")
-    with st.expander("🔑 Forgot your password?"):
+    st.error(" Username or password is incorrect")
+    with st.expander(" Forgot your password?"):
         st.info("For security, password resets are handled by the system administrator. Please contact your ClaimGuard admin to reset your credentials.")
     st.stop()
 elif st.session_state.get('authentication_status') is None:
-    with st.expander("🔑 Forgot your password?"):
+    with st.expander(" Forgot your password?"):
         st.info("For security, password resets are handled by the system administrator. Please contact your ClaimGuard admin to reset your credentials.")
     st.stop()
 
@@ -264,7 +264,7 @@ def load_model():
         model_columns = joblib.load(os.path.join(BASE_DIR, 'model_columns.pkl'))
         return model, model_columns
     except FileNotFoundError:
-        st.error("⚠️ Model files not found. Please contact the system administrator.")
+        st.error(" Model files not found. Please contact the system administrator.")
         st.stop()
 
 @st.cache_data
@@ -272,7 +272,7 @@ def load_and_score_data():
     try:
         df = pd.read_csv(os.path.join(BASE_DIR, 'data', 'fraud_oracle.csv'))
     except FileNotFoundError:
-        st.error("⚠️ Claims data file not found. Please contact the system administrator.")
+        st.error(" Claims data file not found. Please contact the system administrator.")
         st.stop()
 
     model, model_columns = load_model()
@@ -292,30 +292,30 @@ if 'investigator_notes' not in st.session_state:
     st.session_state.investigator_notes = {}
 
 with st.sidebar:
-    st.write(f"👤 Logged in as: **{name}**")
+    st.write(f" Logged in as: **{name}**")
     authenticator.logout("Logout", "sidebar")
     st.divider()
     st.markdown("## 🛡️ ClaimGuard")
     st.caption("Insurance Fraud Prioritization")
     st.divider()
-    st.markdown("### 🎛️ Filters")
+    st.markdown("###  Filters")
     month_filter = st.multiselect("Filter by Month", options=sorted(df['Month'].unique()), default=[])
     st.divider()
 
-    st.markdown("### 🎯 This Week's Focus")
+    st.markdown("###  This Week's Focus")
     top3 = df.sort_values('Risk_Score', ascending=False).head(3)
     for idx, r in top3.iterrows():
         st.markdown(f"""<div class="focus-item">🔴 {r['Make']} — {r['Month']} — Score {r['Risk_Score']:.2f}</div>""", unsafe_allow_html=True)
 
     st.divider()
-    st.markdown("### 🔔 Live Alerts")
+    st.markdown("###  Live Alerts")
     top_alert = df.sort_values('Risk_Score', ascending=False).iloc[0]
     st.markdown(f"""<div style="background:#0E2214; padding:10px 12px; border-radius:10px; border-left:3px solid #5CD68A; font-size:12.5px;">
     🚨 Highest risk claim: <b>{top_alert['Make']}</b><br>Score: <b>{top_alert['Risk_Score']:.2f}</b></div>""", unsafe_allow_html=True)
 
     if username == "admin":
         st.divider()
-        st.markdown("### 📊 Model Performance")
+        st.markdown("###  Model Performance")
         st.markdown("""
         <div class="model-info-box">
         <b style="color:#5CD68A;">Recall (catches real fraud):</b> 90%<br>
@@ -326,12 +326,12 @@ with st.sidebar:
 
     if st.session_state.search_history:
         st.divider()
-        st.markdown("### 🕓 Recent Searches")
+        st.markdown("###  Recent Searches")
         for h in st.session_state.search_history[-5:][::-1]:
             st.caption(f"Claim #{h}")
 
     st.divider()
-    st.markdown("### ℹ️ About")
+    st.markdown("### ℹ About")
     st.caption("This dashboard scores every insurance claim for fraud risk the moment it's filed, so investigators know exactly where to look first.")
 
 filtered_df = df.copy()
@@ -348,13 +348,13 @@ st.caption("Insurance Claims Fraud Prioritization System")
 
 high_pct = (filtered_df['Risk_Level'] == 'High').mean() * 100
 if high_pct > 25:
-    st.markdown(f"""<div class="alert-banner">⚠️ <b>{high_pct:.0f}%</b> of claims in this view are High Risk — above the normal threshold. Consider prioritizing review this week.</div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="alert-banner"> <b>{high_pct:.0f}%</b> of claims in this view are High Risk — above the normal threshold. Consider prioritizing review this week.</div>""", unsafe_allow_html=True)
 
 st.write("")
-tab1, tab2, tab3 = st.tabs(["📊  Overview", "🔍  Search a Claim", "📋  All Claims"])
+tab1, tab2, tab3 = st.tabs([" Overview", "Search a Claim", " All Claims"])
 
 with tab1:
-    with st.expander("ℹ️ New here? Click to see how this dashboard works"):
+    with st.expander("ℹNew here? Click to see how this dashboard works"):
         st.markdown("""
         **What is ClaimGuard?**
         This dashboard scores every insurance claim for fraud risk the moment it's filed — so an investigator always knows which claims to check first.
@@ -383,10 +383,10 @@ with tab1:
     top_claim = filtered_df.sort_values('Risk_Score', ascending=False).iloc[0]
     st.markdown(f"""
     <div class="spotlight-card">
-        <span style="color:#5CD68A; font-size:12px; letter-spacing:1px; text-transform:uppercase; font-weight:700;">⭐ Top Priority Claim</span>
+        <span style="color:#5CD68A; font-size:12px; letter-spacing:1px; text-transform:uppercase; font-weight:700;"> Top Priority Claim</span>
         <h3 style="color:white; margin:8px 0;">{top_claim['Make']} — {top_claim['Month']}</h3>
         <p style="color:#E4E7F5; margin:0;">Risk Score: <b>{top_claim['Risk_Score']:.2f}</b> &nbsp;|&nbsp; Fault: <b>{top_claim['Fault']}</b> &nbsp;|&nbsp; Police Report: <b>{top_claim['PoliceReportFiled']}</b></p>
-        <p style="color:#5CD68A; font-style:italic; margin-top:8px;">🤖 {generate_explanation(top_claim)}</p>
+        <p style="color:#5CD68A; font-style:italic; margin-top:8px;"> {generate_explanation(top_claim)}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -426,7 +426,7 @@ with tab1:
         st.plotly_chart(fig_trend, use_container_width=True)
 
     st.write("")
-    st.markdown("#### 🔬 Why Claims Get Flagged — Risk Factor Breakdown")
+    st.markdown("####  Why Claims Get Flagged — Risk Factor Breakdown")
     st.caption("Real fraud rate for each risk signal, calculated from the dataset (from Week 3 EDA).")
 
     factor_data = {
@@ -453,7 +453,7 @@ with tab1:
     st.plotly_chart(fig_factors, use_container_width=True)
 
 with tab2:
-    st.subheader("🔍 Search a Claim")
+    st.subheader("Search a Claim")
     search_id = st.number_input("Enter Row Number (0 to 15419)", min_value=0, max_value=len(df)-1, step=1)
 
     if st.button("View Claim Details", type="primary"):
@@ -473,7 +473,7 @@ with tab2:
         bar_color = {'High': '#B0470E', 'Medium': '#8a5a00', 'Low': '#2E6B3E'}[claim['Risk_Level']]
 
         if claim['Risk_Level'] == 'High':
-            st.toast(f"⚠️ High-risk claim detected! Score: {claim['Risk_Score']:.2f}", icon="🚨")
+            st.toast(f" High-risk claim detected! Score: {claim['Risk_Score']:.2f}", icon="🚨")
 
         st.markdown(f"""
         <div class="detail-panel">
@@ -486,7 +486,7 @@ with tab2:
             <b>Police Report Filed:</b> {claim['PoliceReportFiled']} &nbsp;|&nbsp;
             <b>Witness Present:</b> {claim['WitnessPresent']}
             </p>
-            <p style="margin-top:12px; color:#5CD68A; font-style:italic;">🤖 {explanation}</p>
+            <p style="margin-top:12px; color:#5CD68A; font-style:italic;"> {explanation}</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -497,19 +497,19 @@ with tab2:
 
         st.markdown(f"""
         <div style="background:#0E2214; padding:10px 16px; border-radius:10px; margin-top:8px; border-left:3px solid {comparison_color};">
-        📊 This claim's risk is <b style="color:{comparison_color};">{comparison_text}</b> (average: {avg_score:.2f})
+        This claim's risk is <b style="color:{comparison_color};">{comparison_text}</b> (average: {avg_score:.2f})
         </div>
         """, unsafe_allow_html=True)
 
         st.write("")
-        st.markdown("**📝 Investigator Notes**")
+        st.markdown("**Investigator Notes**")
         existing_note = st.session_state.investigator_notes.get(search_id, "")
         note_text = st.text_area("Add notes for this claim (visible only in this session)", value=existing_note, key=f"note_{search_id}", height=80)
-        if st.button("💾 Save Note", key=f"save_note_{search_id}"):
+        if st.button("Save Note", key=f"save_note_{search_id}"):
             st.session_state.investigator_notes[search_id] = note_text
             st.success("Note saved for this session.")
         if existing_note:
-            st.markdown(f"""<div class="notes-box">🗒️ <b>Saved note:</b> {existing_note}</div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="notes-box"> <b>Saved note:</b> {existing_note}</div>""", unsafe_allow_html=True)
 
         report_text = f"""CLAIMGUARD INVESTIGATION SUMMARY
 {'='*40}
@@ -529,17 +529,17 @@ Investigator Notes:
 
 Generated: {datetime.now().strftime('%d %b %Y, %I:%M %p')}
 """
-        st.download_button("📄 Download Investigation Summary", data=report_text,
+        st.download_button("Download Investigation Summary", data=report_text,
             file_name=f"claim_{search_id}_report.txt", mime="text/plain")
 
         st.write("")
         st.markdown("**Was this prediction accurate?**")
         fb_col1, fb_col2 = st.columns(2)
         with fb_col1:
-            if st.button("✅ Correct prediction"):
+            if st.button("Correct prediction"):
                 st.success("Thanks! This feedback will help improve future models.")
         with fb_col2:
-            if st.button("❌ Incorrect prediction"):
+            if st.button("Incorrect prediction"):
                 st.warning("Thanks for flagging this — noted for model review.")
 
 with tab3:
@@ -578,7 +578,7 @@ with tab3:
         st.caption("Showing a mix of High, Medium, and Low risk claims. Use filters above to narrow down.")
 
     csv_data = display_df.to_csv(index=False).encode('utf-8')
-    st.download_button("⬇️ Download this list as CSV", data=csv_data, file_name="claimguard_export.csv", mime="text/csv")
+    st.download_button("⬇Download this list as CSV", data=csv_data, file_name="claimguard_export.csv", mime="text/csv")
 
     rows_html = ""
     colors = {'High': '#B0470E', 'Medium': '#8a5a00', 'Low': '#2E6B3E'}
