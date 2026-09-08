@@ -360,9 +360,9 @@ with tab1:
         This dashboard scores every insurance claim for fraud risk the moment it's filed — so an investigator always knows which claims to check first.
 
         **How to use it:**
-        - 📊 **Overview** — see overall stats, today's top priority claim, and risk patterns
-        - 🔍 **Search a Claim** — enter any claim number to see its risk score, why it was flagged, and add your own notes
-        - 📋 **All Claims** — browse and filter the full sorted list, or download it as a CSV
+        -  **Overview** — see overall stats, today's top priority claim, and risk patterns
+        -  **Search a Claim** — enter any claim number to see its risk score, why it was flagged, and add your own notes
+        -  **All Claims** — browse and filter the full sorted list, or download it as a CSV
 
         **What the colors mean:**
         🔴 High Risk &nbsp;&nbsp; 🟠 Medium Risk &nbsp;&nbsp; 🟢 Low Risk
@@ -427,7 +427,7 @@ with tab1:
 
     st.write("")
     st.markdown("####  Why Claims Get Flagged — Risk Factor Breakdown")
-    st.caption("Real fraud rate for each risk signal, calculated from the dataset (from Week 3 EDA).")
+    st.caption("Real fraud rate for each risk signal, calculated from the dataset.")
 
     factor_data = {
         "Fault: Policy Holder": df[df['Fault'] == 'Policy Holder']['FraudFound_P'].mean() * 100 if 'FraudFound_P' in df.columns else 7.9,
@@ -543,7 +543,7 @@ Generated: {datetime.now().strftime('%d %b %Y, %I:%M %p')}
                 st.warning("Thanks for flagging this — noted for model review.")
 
 with tab3:
-    st.subheader("📋 Claims Sorted by Risk (Highest First)")
+    st.subheader("Claims Sorted by Risk (Highest First)")
 
     fcol1, fcol2, fcol3 = st.columns(3)
     with fcol1:
