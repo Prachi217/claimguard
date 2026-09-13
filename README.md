@@ -18,11 +18,11 @@
 
 <h2 style = "color:#333;"> Student Details </h2>
 <div align = "left" style ="margin: 20px; font-size: 16px;">
-    <p><strong>Name:</strong> Mathew George </p>
-    <p><strong>Email ID:</strong> mathewgeorgeg1dataanalytics@gmail.com </p>
-    <p><strong>College Name:</strong> Ilahia College of Engineering & Technology </p>
-    <p><strong>Branch/Specialization :</strong> B.Tech in Electronics & Communication Engineering  </p>
-    <p><strong>College ID:</strong> ICE17EC029 </p>
+    <p><strong>Name:</strong> Prachi Vishwakarma </p>
+    <p><strong>Email ID:</strong> prachig1dataanalytics@gmail.com </p>
+    <p><strong>College Name:</strong> BIRT Bhopal RGPV </p>
+    <p><strong>Branch/Specialization :</strong> B.Tech in Computer Science & Data Science  </p>
+    <p><strong>College ID:</strong> 017CD231035 </p>
 </div>
 
 <hr style="border: 0; border-top: 1px solid #ccc; width: 80%;" />
