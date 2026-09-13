@@ -87,25 +87,26 @@ The project combines machine learning, Supabase, automated n8n workflows, Power 
 
 ## References
 
-The following resources and technologies were used while developing the RiskCheck AI project:
 
-- [Databricks Model Serving](https://docs.databricks.com/aws/en/machine-learning/model-serving/)
-  : Used to deploy the fraud detection model and generate invoice risk predictions through REST API requests.
+The following resources and technologies were used while developing the ClaimGuard project:
 
-- [Delta Lake](https://delta.io/)
-  : Used to store scored invoices and verified investigator feedback in reliable and auditable data tables.
+* [Automobile Insurance Fraud Dataset](https://figshare.com/articles/dataset/fraud_oracle_csv/24994233): Used to analyse historical insurance claims and train the fraud-detection model.
+  
+* [Streamlit](https://streamlit.io/): Used to build the interactive claim-search, risk-scoring, and investigator dashboard.
+  
+* [Supabase](https://supabase.com/docs): Used as the PostgreSQL database for storing claim details and fraud-risk results.
+  
+* [Scikit-learn](https://scikit-learn.org/): Used to develop, train, and evaluate the Logistic Regression and Random Forest models.
+  
+* [Imbalanced-learn](https://imbalanced-learn.org/): Used to apply SMOTE and address the imbalance between fraudulent and genuine claims.
+  
+* [n8n](https://docs.n8n.io/): Used to automate scheduled monitoring and email notifications for high-risk claims.
+  
+* [Microsoft Power BI](https://learn.microsoft.com/en-us/power-bi/): Used to create executive dashboards showing claim volume, risk distribution, trends, and fraud indicators.
+  
+* [Pandas](https://pandas.pydata.org/): Used for claim-data cleaning, validation, transformation, exploratory analysis, and feature preparation.
 
-- [Databricks SQL](https://docs.databricks.com/aws/en/sql/)
-  : Used to query and manage invoice scoring results and investigator feedback.
-
-- [Streamlit](https://streamlit.io/)
-  : Used to build the interactive invoice-scoring and investigation dashboard.
-
-- [Scikit-Learn](https://scikit-learn.org/)
-  : Used for machine learning development, model training, and evaluation.
-
-- [Pandas](https://pandas.pydata.org/)
-  : Used for invoice data validation, transformation, batch processing, and analytical operations.
+---
 
 ## **Learnings from LST and PAWR**
 
