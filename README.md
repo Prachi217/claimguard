@@ -67,20 +67,21 @@
 
 ## Projects Completed
 
-### RiskCheck AI
-**Invoice Fraud Detection & Investigation Prioritisation**
+### ClaimGuard
+**Insurance Claims Fraud Detection & Risk Prioritisation**
 
-RiskCheck AI is an end-to-end invoice fraud detection and decision-support project. It analyses invoice data, generates fraud probability scores, assigns investigation priorities, alerts reviewers about high-risk invoices, and records verified outcomes for automated model retraining.
+ClaimGuard is an end-to-end insurance claims fraud detection and decision-support project. It analyses claim data, generates fraud probability scores, identifies the factors behind each prediction, and prioritises high-risk claims for investigator review.
 
-The project combines machine learning, Databricks Model Serving, Delta Lake, Databricks SQL, email automation, and Streamlit to help accounts payable teams identify suspicious invoices and prioritise investigations efficiently.
+The project combines machine learning, Supabase, automated n8n workflows, Power BI, and a Streamlit investigator dashboard to help insurance teams detect suspicious claims earlier, use investigator time effectively, and replace first-in-first-out processing with a risk-based review queue.
 
-**Technologies:** Python | Streamlit | Databricks | Delta Lake | Databricks SQL | Machine Learning | REST API | SMTP
+**Technologies:** Python | Streamlit | Supabase | PostgreSQL | Power BI | n8n | scikit-learn | Machine Learning
 
-**→ [View Full Project Report](https://github.com/sure-trust/MATHEW-GEORGE-g1-data-analytics/blob/e04b1abe0f30715ee59aa6d6820271d4881974b4/Course%20report/Mathew_George_RiskCheck_AI_Project_Final_Report_.pdf)**
 
-**→ [View Project](https://github.com/mathewgeorge24/RiskCheck-AI)**
+**→ [View Full Project Report](https://github.com/sure-trust/PRACHI-VISHWAKARMA-g1-data-analytics/blob/7fe7e643e5e58785a57af12ec94a3eb284c28ba3/Course%20report/Prachi_ClaimGaurd_Project_Final_Report_.pdf)**
 
-**→ [Live Demo](https://riskcheck-ai.streamlit.app/)**
+**→ [View Project](https://github.com/Prachi217/claimguard)**
+
+**→ [Live Demo](https://claimguard-fraud-detection.streamlit.app/)**
 
 ---
 
@@ -131,8 +132,8 @@ As part of my internship, I participated in community service activities that he
 ### **Photos**
 
 <div align="center">
-<img src="https://github.com/sure-trust/MATHEW-GEORGE-g1-data-analytics/blob/6442e3d806ab73dcd9a8bc163e51a4ab3aad893f/Community%20Services/Planting%20Trees.png?raw=true" alt="Tree Plantation" width="30%">
-<img src="https://github.com/sure-trust/MATHEW-GEORGE-g1-data-analytics/blob/e3e0ece7c9385d1a2f8d263efeda57b68bda9540/Community%20Services/Helping%20Senior%20Citizens.png?raw=true" alt="Helping Elder Citizens" width="30%">
+<img src="https://github.com/sure-trust/PRACHI-VISHWAKARMA-g1-data-analytics/blob/70e9fedd78dd1f89b6ee0da2c80e835aef551aed/Community%20Services/PRACHI%20VISHWAKARMA%20PLANT.png?raw=true" alt="Tree Plantation" width="30%">
+<img src="https://github.com/sure-trust/PRACHI-VISHWAKARMA-g1-data-analytics/blob/70e9fedd78dd1f89b6ee0da2c80e835aef551aed/Community%20Services/Prachi%20Vishwakarma%20Serving%20Senior%20Citizen.png?raw=true" alt="Helping Elder Citizens" width="30%">
 </div>
 
 ---
